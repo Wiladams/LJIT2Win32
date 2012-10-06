@@ -3,11 +3,10 @@
 local ffi = require "ffi"
 local bit = require "bit"
 local bor = bit.bor
+local lshift = bit.lshift
+local rshift = bit.rshift
 
 require "WTypes"
-
--- Winnt.h
-MAXIMUM_WAIT_OBJECTS = 64     -- Maximum number of wait objects
 
 
 INVALID_HANDLE_VALUE = ffi.cast("intptr_t", -1)

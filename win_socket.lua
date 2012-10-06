@@ -64,7 +64,7 @@ INET6_ADDRSTRLEN		= 46
 
 -- Socket Types
 ffi.cdef[[
-struct SocketType {
+struct IP_SocketType {
 static const int SOCK_STREAM     = 1;    // stream socket
 static const int SOCK_DGRAM      = 2;    // datagram socket
 static const int SOCK_RAW        = 3;    // raw-protocol interface
@@ -74,78 +74,86 @@ static const int SOCK_SEQPACKET  = 5;    // sequenced packet stream
 ]]
 
 
--- Address families
-AF_UNSPEC 		= 0          -- unspecified */
-AF_UNIX 		= 1            -- local to host (pipes, portals) */
-AF_INET 		= 2            -- internetwork: UDP, TCP, etc. */
-AF_IMPLINK 		= 3         -- arpanet imp addresses */
-AF_PUP 			= 4            -- pup protocols: e.g. BSP */
-AF_CHAOS 		= 5           -- mit CHAOS protocols */
-AF_IPX 			= 6             -- IPX and SPX */
-AF_NS 			= 6              -- XEROX NS protocols */
-AF_ISO 			= 7             -- ISO protocols */
-AF_OSI 			= AF_ISO        -- OSI is ISO */
-AF_ECMA 		= 8            -- european computer manufacturers */
-AF_DATAKIT 		= 9         -- datakit protocols */
-AF_CCITT 		= 10          -- CCITT protocols, X.25 etc */
-AF_SNA 			= 11           -- IBM SNA */
-AF_DECnet 		= 12         -- DECnet */
-AF_DLI 			= 13            -- Direct data link interface */
-AF_LAT 			= 14            -- LAT */
-AF_HYLINK 		= 15         -- NSC Hyperchannel */
-AF_APPLETALK 	= 16      -- AppleTalk */
-AF_NETBIOS 		= 17        -- NetBios-style addresses */
-AF_VOICEVIEW 	= 18     -- VoiceView */
-AF_FIREFOX 		= 19        -- FireFox */
-AF_UNKNOWN1 	= 20       -- Somebody is using this! */
-AF_BAN 			= 21            -- Banyan */
-AF_INET6  		= 23              -- Internetwork Version 6
-AF_IRDA   		= 26              -- IrDA
+ffi.cdef[[
+// Address families
+struct IP_Family {
+static const int AF_UNSPEC 		= 0;          // unspecified
+static const int AF_UNIX 		= 1;          // local to host (pipes, portals)
+static const int AF_INET 		= 2;          // internetwork: UDP, TCP, etc.
+static const int AF_IMPLINK 	= 3;          // arpanet imp addresses
+static const int AF_PUP 		= 4;          // pup protocols: e.g. BSP
+static const int AF_CHAOS 		= 5;          // mit CHAOS protocols
+static const int AF_IPX 		= 6;          // IPX and SPX
+static const int AF_NS 			= 6;          // XEROX NS protocols
+static const int AF_ISO 		= 7;          // ISO protocols
+//static const int AF_OSI 		= AF_ISO      // OSI is ISO
+static const int AF_ECMA 		= 8;          // european computer manufacturers
+static const int AF_DATAKIT 	= 9;          // datakit protocols
+static const int AF_CCITT 		= 10;         // CCITT protocols, X.25 etc
+static const int AF_SNA 		= 11;         // IBM SNA
+static const int AF_DECnet 		= 12;         // DECnet
+static const int AF_DLI 		= 13;         // Direct data link interface
+static const int AF_LAT 		= 14;         // LAT
+static const int AF_HYLINK 		= 15;         // NSC Hyperchannel
+static const int AF_APPLETALK 	= 16;         // AppleTalk
+static const int AF_NETBIOS 	= 17;         // NetBios-style addresses
+static const int AF_VOICEVIEW 	= 18;         // VoiceView
+static const int AF_FIREFOX 	= 19;         // FireFox
+static const int AF_UNKNOWN1 	= 20;         // Somebody is using this!
+static const int AF_BAN 		= 21;         // Banyan
+static const int AF_INET6  		= 23;         // Internetwork Version 6
+static const int AF_IRDA   		= 26;         // IrDA
 
-AF_MAX = 33
+static const int AF_MAX = 33;
+};
+]]
+
+ffi.cdef[[
+//
+// Protocols
+//
+struct IP_Protocol {
+static const int IPPROTO_IP			= 0;		// dummy for IP
+static const int IPPROTO_ICMP		= 1;		// control message protocol
+static const int IPPROTO_IGMP		= 2;		// group management protocol
+static const int IPPROTO_GGP			= 3;		// gateway^2 (deprecated)
+static const int IPPROTO_TCP			= 6;		// tcp
+static const int IPPROTO_PUP			= 12;		// pup
+static const int IPPROTO_UDP			= 17;		// user datagram protocol
+static const int IPPROTO_IDP			= 22;		// xns idp
+static const int IPPROTO_RDP			= 27;
+static const int IPPROTO_IPV6		= 41;		// IPv6 header
+static const int IPPROTO_ROUTING		= 43;		// IPv6 Routing header
+static const int IPPROTO_FRAGMENT	= 44;		// IPv6 fragmentation header
+static const int IPPROTO_ESP			= 50;		// encapsulating security payload
+static const int IPPROTO_AH			= 51;		// authentication header
+static const int IPPROTO_ICMPV6		= 58;		// ICMPv6
+static const int IPPROTO_NONE		= 59;		// IPv6 no next header
+static const int IPPROTO_DSTOPTS		= 60;		// IPv6 Destination options
+static const int IPPROTO_ND			= 77;		// UNOFFICIAL net disk proto
+static const int IPPROTO_ICLFXBM		= 78;
+static const int IPPROTO_PIM			= 103;
+static const int IPPROTO_PGM			= 113;
+//static const int IPPROTO_RM			= IPPROTO_PGM;
+static const int IPPROTO_L2TP		= 115;
+static const int IPPROTO_SCTP		= 132;
+
+static const int IPPROTO_RAW          =   255;             // raw IP packet
+static const int IPPROTO_MAX          =   256;
+
+//
+//  These are reserved for internal use by Windows.
+//
+static const int IPPROTO_RESERVED_RAW = 257;
+static const int IPPROTO_RESERVED_IPSEC = 258;
+static const int IPPROTO_RESERVED_IPSECOFFLOAD = 259;
+static const int IPPROTO_RESERVED_MAX = 260;
+};
+]]
 
 
 
---
--- Protocols
---
 
-IPPROTO_IP			= 0;		-- dummy for IP
-IPPROTO_ICMP		= 1;		-- control message protocol
-IPPROTO_IGMP		= 2;		-- group management protocol
-IPPROTO_GGP			= 3;		-- gateway^2 (deprecated)
-IPPROTO_TCP			= 6;		-- tcp
-IPPROTO_PUP			= 12;		-- pup
-IPPROTO_UDP			= 17;		-- user datagram protocol
-IPPROTO_IDP			= 22;		-- xns idp
-IPPROTO_RDP			= 27;
-IPPROTO_IPV6		= 41;		-- IPv6 header
-IPPROTO_ROUTING		= 43;		-- IPv6 Routing header
-IPPROTO_FRAGMENT	= 44;		-- IPv6 fragmentation header
-IPPROTO_ESP			= 50;		-- encapsulating security payload
-IPPROTO_AH			= 51;		-- authentication header
-IPPROTO_ICMPV6		= 58;		-- ICMPv6
-IPPROTO_NONE		= 59;		-- IPv6 no next header
-IPPROTO_DSTOPTS		= 60;		-- IPv6 Destination options
-IPPROTO_ND			= 77;		-- UNOFFICIAL net disk proto
-IPPROTO_ICLFXBM		= 78;
-IPPROTO_PIM			= 103;
-IPPROTO_PGM			= 113;
-IPPROTO_RM			= IPPROTO_PGM;
-IPPROTO_L2TP		= 115;
-IPPROTO_SCTP		= 132;
-
-
-IPPROTO_RAW          =   255             -- raw IP packet
-IPPROTO_MAX          =   256
-
---
---  These are reserved for internal use by Windows.
---
-IPPROTO_RESERVED_RAW = 257
-IPPROTO_RESERVED_IPSEC = 258
-IPPROTO_RESERVED_IPSECOFFLOAD = 259
-IPPROTO_RESERVED_MAX = 260
 
 --
 -- Options for use with [gs]etsockopt at the IP level.
@@ -960,5 +968,7 @@ int WSAIoctl(
 return {
 	wsadata_typename = wsadata_typename,
 	
-	SocketType = ffi.new("struct SocketType");
+	SocketType = ffi.new("struct IP_SocketType");
+	Protocol = ffi.new("struct IP_Protocol");
+	Family = ffi.new("struct IP_Family");
 }

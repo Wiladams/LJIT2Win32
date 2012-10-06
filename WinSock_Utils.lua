@@ -3,6 +3,8 @@ local ffi = require "ffi"
 
 local wsock = require "win_socket"
 local SocketType = wsock.SocketType
+local Protocol = wsock.Protocol
+local Family = wsock.Family
 
 -- Startup windows sockets
 local SocketLib = ffi.load("ws2_32")
@@ -76,8 +78,8 @@ IN_ADDR = ffi.metatype(IN_ADDR, IN_ADDR_mt)
 
 
 local families = {
-	[AF_INET] = "AF_INET",
-	[AF_INET6] = "AF_INET6",
+	[Family.AF_INET] = "AF_INET",
+	[Family.AF_INET6] = "AF_INET6",
 }
 
 local socktypes = {
@@ -86,9 +88,9 @@ local socktypes = {
 }
 
 local protocols = {
-	[IPPROTO_IP]  = "IPPROTO_IP",
-	[IPPROTO_TCP] = "IPPROTO_TCP",
-	[IPPROTO_UDP] = "IPPROTO_UDP",
+	[Protocol.IPPROTO_IP]  = "IPPROTO_IP",
+	[Protocol.IPPROTO_TCP] = "IPPROTO_TCP",
+	[Protocol.IPPROTO_UDP] = "IPPROTO_UDP",
 }
 
 
@@ -100,7 +102,7 @@ sockaddr_in_mt = {
 
 	__new = function(ct, port, family)
 		port = port or 80
-		family = family or AF_INET;
+		family = family or Family.AF_INET;
 		
 		local obj = ffi.new(ct)
 		obj.sin_family = family;
@@ -180,9 +182,9 @@ addrinfo_mt = {
 			--print("Address: ", self.ai_addr);
 			--print("Address Family: ", self.ai_addr.sa_family);
 			local addr
-			if self.ai_addr.sa_family == AF_INET then
+			if self.ai_addr.sa_family == Family.AF_INET then
 				addr = ffi.cast("struct sockaddr_in *", self.ai_addr)
-			elseif self.ai_addr.sa_family == AF_INET6 then
+			elseif self.ai_addr.sa_family == Family.AF_INET6 then
 				addr = ffi.cast("struct sockaddr_in6 *", self.ai_addr)
 			end
 			print(addr);
@@ -285,6 +287,8 @@ local setsockopt = function(s, optlevel, optname, optval, optlen)
 end
 
 local shutdown = function(s, how)
+	how = how or SD_BOTH
+	
 	if 0 == SocketLib.shutdown(s, how) then
 		return true
 	end
@@ -293,9 +297,9 @@ local shutdown = function(s, how)
 end
 
 local socket = function(af, socktype, protocol)
-	af = af or AF_INET
-	socktype = socktype or SOCK_STREAM
-	protocol = protocol or IPPROTO_TCP
+	af = af or Family.AF_INET
+	socktype = socktype or SocketType.SOCK_STREAM
+	protocol = protocol or Protocol.IPPROTO_TCP
 	
 	local sock = SocketLib.socket(af, socktype, protocol);
 	if sock == INVALID_SOCKET then
@@ -319,7 +323,7 @@ local WSAPoll = function(fdArray, fds, timeout)
 end
 
 local WSASocket = function(af, socktype, protocol, lpProtocolInfo, g, dwFlags)
-	af = af or AF_INET;
+	af = af or Family.AF_INET;
 	socktype = ocktype or SocketType.SOCK_STREAM;
 	protocol = protocol or 0;
 	lpProtocolInfo = lpProtocolInfo or nil;
@@ -442,7 +446,7 @@ return {
 SOCKADDR_STORAGE = nil
 SOCKADDR_STORAGE_mt = {
 	__tostring = function(self)
-		if self.ss_family == AF_INET then
+		if self.ss_family == Family.AF_INET then
 			return string.format("AF_INET, %s,  %d", self:GetAddressString(), self:GetPort())
 		end
 
@@ -455,14 +459,14 @@ SOCKADDR_STORAGE_mt = {
 
 	__index={
 		Assign = function(self, rhs)
-			if rhs.ss_family == AF_INET then
+			if rhs.ss_family == Family.AF_INET then
 				local selfptr = ffi.cast("struct sockaddr_in *", self)
 				local rhsptr = ffi.cast("struct sockaddr_in *", rhs)
 				local len = ffi.sizeof("struct sockaddr_in")
 
 				memcpy(selfptr, rhs, len)
 				return self
-			elseif rhs.ss_family == AF_INET6 then
+			elseif rhs.ss_family == Family.AF_INET6 then
 				local selfptr = ffi.cast("struct sockaddr_in6 *", self)
 				local rhsptr = ffi.cast("struct sockaddr_in6 *", rhs)
 				local len = ffi.sizeof("struct sockaddr_in6")
@@ -479,10 +483,10 @@ SOCKADDR_STORAGE_mt = {
 		end,
 
 		Size = function(self)
-			if self.ss_family == AF_INET then
+			if self.ss_family == Family.AF_INET then
 				local len = ffi.sizeof("struct sockaddr_in")
 				return len
-			elseif self.ss_family == AF_INET6 then
+			elseif self.ss_family == Family.AF_INET6 then
 				local len = ffi.sizeof("struct sockaddr_in6")
 				return len
 			end
@@ -500,7 +504,7 @@ SOCKADDR_STORAGE_mt = {
 		Equal = function(self, rhs)
 			if self.ss_family ~= rhs.ss_family then return false end
 
-			if self.sa_family == AF_INET then
+			if self.sa_family == Family.AF_INET then
 				local len = ffi.sizeof("struct sockaddr_in")
 				return memcmp(self, rhs, len)
 			else
@@ -512,7 +516,7 @@ SOCKADDR_STORAGE_mt = {
 		end,
 
 		GetAddressString = function(self)
-			if self.ss_family == AF_INET then
+			if self.ss_family == Family.AF_INET then
 				local selfptr = ffi.cast("struct sockaddr_in *", self)
 				return selfptr.sin_addr:GetAsString()
 			elseif self.ss_family == AF_INET6 then

@@ -5,6 +5,7 @@ local band = bit.band
 
 local WinSock = require "WinSock_Utils"
 local SocketType = WinSock.FFI.SocketType;
+local Family = WinSock.FFI.Family;
 
 local NativeSocket = require "NativeSocket"
 
@@ -14,9 +15,9 @@ function newSocketAddress(name, namelen)
 	local sockaddrptr = ffi.cast("struct sockaddr *", name)
 	local newone
 
-	if sockaddrptr.sa_family == AF_INET then
+	if sockaddrptr.sa_family == Family.AF_INET then
 		newone = sockaddr_in()
-	elseif sockaddrptr.sa_family == AF_INET6 then
+	elseif sockaddrptr.sa_family == Family.AF_INET6 then
 		newone = sockaddr_in6()
 	end
 	ffi.copy(newone, sockaddrptr, namelen)
@@ -27,7 +28,7 @@ end
 
 local function host_serv(hostname, servicename, family, sockttype, isnumericstring)
 	hostname = hostname or "localhost"
-	family = family or AF_UNSPEC;
+	family = family or Family.AF_UNSPEC;
 	socktype = socktype or SocketType.SOCK_STREAM;
 
 	local err;
@@ -62,8 +63,8 @@ function CreateIPV4WildcardAddress(family, port)
 end
 
 function CreateSocketAddress(hostname, port, family, socktype)
-	family = family or AF_INET
-	socktype = socktype or SOCK_STREAM
+	family = family or Family.AF_INET
+	socktype = socktype or SocketType.SOCK_STREAM
 
 --print("CreateSocketAddress(): ", hostname, port);
 
@@ -226,7 +227,10 @@ function CreateTcpServerSocket(params)
 	end
 
 	success, err = sock:SetNonBlocking(params.nonblocking);
-
+	if not success then 
+		print("SetNonBlocking: ", err);
+	end
+	
 	return sock
 end
 

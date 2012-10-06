@@ -33,8 +33,6 @@ function TimedLoop(callback, frequency, params)
 	local dwFlags = bor(U32.FFI.MWMO_ALERTABLE,U32.FFI.MWMO_INPUTAVAILABLE)
 
 	while (true) do
-
-		
 		timeleft = nextTime - sw:Milliseconds();
 		if (timeleft <= 0.001) then
 			callback(tickCount, params);

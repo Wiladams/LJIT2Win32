@@ -2,12 +2,14 @@
 local ffi = require "ffi"
 
 local WinSock = require "WinSock_Utils"
-local SocketType = require ("win_socket").SocketType
-
+local wsock = require "win_socket"
+local SocketType = wsock.SocketType
+local Protocol = wsock.Protocol
 
 ffi.cdef[[
 typedef struct {
 	SOCKET				Handle;
+	int					id;
 } Socket_Win32;
 ]]
 
@@ -17,7 +19,7 @@ local NativeSocket_mt = {
 	__gc = function(self)
 		-- Force close on socket
 		-- To ensure it's really closed
-		print("GC: NativeSocket");
+		print("GC: NativeSocket: ", self.id);
 		self:ForceClose();
 	end,
 	
@@ -54,7 +56,7 @@ local NativeSocket_mt = {
 
 			if keepalive and delay then
 				oneint[0] = delay
-				success, err = WinSock.setsockopt(self.Handle, IPPROTO_TCP, TCP_KEEPALIVE, oneint, ffi.sizeof(oneint))
+				success, err = WinSock.setsockopt(self.Handle, Protocol.IPPROTO_TCP, TCP_KEEPALIVE, oneint, ffi.sizeof(oneint))
 			end
 
 			return success, err
@@ -66,7 +68,7 @@ local NativeSocket_mt = {
 				oneint[0] = 1
 			end
 
-			return WinSock.setsockopt(self.Handle, IPPROTO_TCP, TCP_NODELAY, oneint, ffi.sizeof(oneint))
+			return WinSock.setsockopt(self.Handle, Protocol.IPPROTO_TCP, TCP_NODELAY, oneint, ffi.sizeof(oneint))
 		end,
 		
 		SetNonBlocking = function(self, nonblocking)

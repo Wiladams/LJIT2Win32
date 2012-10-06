@@ -2,21 +2,25 @@
 local SocketUtils = require "SocketUtils"
 
 
-local function Run(config, acceptcallback)
-	local port = config.port or 13
-	local ServerSocket, err = SocketUtils.CreateTcpServerSocket({port = port, backlog = 15, nonblocking=false, nodelay = false});
+local function Run(config, acceptcallback, idlecallback)
+	local nonblocking = config.nonblocking
+	local nodelay = config.nodelay
+	
+	local ServerSocket, err = SocketUtils.CreateTcpServerSocket({port = config.port or 80, backlog = config.backlock or 15, nonblocking=nonblocking, nodelay = nodelay});
 	
 	if not ServerSocket or not acceptcallback then 
 		return false, err
 	end
 	
-	print("Daytime Server Running")
+	print("Server Running")
 	local acceptedsock = nil
 	while (true) do
 		acceptedsock, err = ServerSocket:Accept()
 
 		if acceptedsock then
 			acceptcallback(acceptedsock)
+		elseif idlecallback then
+			idlecallback();
 		end
 	end
 end

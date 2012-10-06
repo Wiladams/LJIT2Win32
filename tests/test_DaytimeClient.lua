@@ -1,8 +1,8 @@
-package.path = package.path..";..\\Bhut\\?.lua;..\\Bhut\\core\\?.lua";
+package.path = package.path..";..\\?.lua";
 
 local DaytimeClient = require "DaytimeClient"
 
-for i=1, 50 do
+for i=1, 500 do
 	local dtc = DaytimeClient.new("localhost")
 	dtc:Run()
 end

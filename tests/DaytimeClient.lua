@@ -15,7 +15,13 @@ function DaytimeClient.new(hostname, port)
     port = port or daytimeport;
 
 	local self = {}
-    self.Socket = CreateTcpClientSocket(hostname, port);
+    self.Socket, err = CreateTcpClientSocket(hostname, port);
+	
+	if not self.Socket then
+		print("DaytimeClient.new(), error: ", err);
+		return false, err;
+	end
+	
 	self.Socket:SetNonBlocking(false);
 	setmetatable(self, DaytimeClient_mt)
 	
