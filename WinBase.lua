@@ -186,38 +186,10 @@ THREAD_QUERY_LIMITED_INFORMATION	= 0x0800
 
 
 
+
+
 ffi.cdef[[
-typedef struct _OVERLAPPED {
-    ULONG_PTR Internal;
-    ULONG_PTR InternalHigh;
-    union {
-        struct {
-            DWORD Offset;
-            DWORD OffsetHigh;
-        };
 
-        PVOID Pointer;
-    };
-
-    HANDLE hEvent;
-} OVERLAPPED, *LPOVERLAPPED;
-
-
-
-BOOL GetQueuedCompletionStatus(
-    HANDLE CompletionPort,
-    LPDWORD lpNumberOfBytesTransferred,
-    PULONG_PTR lpCompletionKey,
-    LPOVERLAPPED *lpOverlapped,
-    DWORD dwMilliseconds
-    );
-
-BOOL PostQueuedCompletionStatus(
-	HANDLE CompletionPort,
-	DWORD dwNumberOfBytesTransferred,
-	ULONG_PTR dwCompletionKey,
-	LPOVERLAPPED lpOverlapped
-);
 
 
 typedef struct _BY_HANDLE_FILE_INFORMATION {

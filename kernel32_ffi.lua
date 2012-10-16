@@ -33,6 +33,32 @@ BOOL HeapQueryInformation (HANDLE HeapHandle,
 --]]
 
 ffi.cdef[[
+typedef struct _OVERLAPPED {
+    ULONG_PTR Internal;
+    ULONG_PTR InternalHigh;
+    union {
+        struct {
+            DWORD Offset;
+            DWORD OffsetHigh;
+        };
+
+        PVOID Pointer;
+    };
+
+    HANDLE hEvent;
+} OVERLAPPED, *LPOVERLAPPED;
+
+// Taken from WinNT.h
+typedef struct _RTL_SRWLOCK 
+{
+    PVOID Ptr;
+} RTL_SRWLOCK, *PRTL_SRWLOCK;
+
+// Taken from WinBase.h
+typedef RTL_SRWLOCK SRWLOCK, *PSRWLOCK;
+]]
+
+ffi.cdef[[
 
 
 typedef struct _PROCESS_HEAP_ENTRY {
@@ -154,7 +180,20 @@ HANDLE CreateIoCompletionPort(HANDLE FileHandle,
 	ULONG_PTR CompletionKey,
 	DWORD NumberOfConcurrentThreads);
 
+BOOL GetQueuedCompletionStatus(
+    HANDLE CompletionPort,
+    LPDWORD lpNumberOfBytesTransferred,
+    PULONG_PTR lpCompletionKey,
+    LPOVERLAPPED *lpOverlapped,
+    DWORD dwMilliseconds
+    );
 
+BOOL PostQueuedCompletionStatus(
+	HANDLE CompletionPort,
+	DWORD dwNumberOfBytesTransferred,
+	ULONG_PTR dwCompletionKey,
+	LPOVERLAPPED lpOverlapped
+);
 
 
 HANDLE CreateThread(
@@ -183,6 +222,7 @@ void Sleep(DWORD dwMilliseconds);
 
 DWORD SleepEx(DWORD dwMilliseconds, BOOL bAlertable);
 ]]
+
 
 
 

@@ -312,14 +312,30 @@ end
 --[[
 	Windows Specific Socket routines
 --]]
-local WSAPoll = function(fdArray, fds, timeout)
-	local err = SocketLib.WSAPoll(fdArray, fds, timeout)
+local WSAIoctl = function(s,dwIoControlCode,lpvInBuffer,cbInBuffer,lpvOutBuffer,cbOutBuffer,lpcbBytesReturned,
+							lpOverlapped,lpCompletionRoutine)
 	
-	if SOCKET_ERROR == err then
+	local res = SocketLib.WSAIoctl(s, dwIoControlCode,
+		lpvInBuffer, cbInBuffer,
+		lpvOutBuffer, cbOutBuffer,
+		lpcbBytesReturned,
+		lpOverlapped, lpCompletionRoutine);
+	
+	if res ~= 0 then
 		return false, SocketLib.WSAGetLastError();
 	end
 	
-	return true, err 
+	return res
+end
+
+local WSAPoll = function(fdArray, fds, timeout)
+	local res = SocketLib.WSAPoll(fdArray, fds, timeout)
+	
+	if SOCKET_ERROR == res then
+		return false, SocketLib.WSAGetLastError();
+	end
+	
+	return res
 end
 
 local WSASocket = function(af, socktype, protocol, lpProtocolInfo, g, dwFlags)
@@ -339,6 +355,31 @@ local WSASocket = function(af, socktype, protocol, lpProtocolInfo, g, dwFlags)
 	return socket;
 end
 
+--[[
+	Retrieves the pointer to a winsock extension function.
+--]]
+
+local GetExtensionFunction = function(sock, gwid) 
+	local target = ffi.new("void *[1]");
+	local pbytes = ffi.new("int32_t[1]");
+
+	local result, err = WSAIoctl(sock, SIO_GET_EXTENSION_FUNCTION_POINTER,
+                    gwid,
+                    ffi.sizeof(gwid),
+                    target,
+                    ffi.sizeof(target[0]),
+                    pbytes,
+                    nil,
+                    nil);
+					
+	
+	if not result then
+		return false, err
+	end
+	
+	local bytes = pbytes[0];
+
+end
 
 
 --[[
@@ -428,12 +469,14 @@ return {
 	shutdown = shutdown,
 	socket = socket,
 	
+	WSAIoctl = WSAIoctl,
 	WSAPoll = WSAPoll,
 	WSASocket = WSASocket,
 	
 	-- Helper functions
 	GetLocalHostName = GetLocalHostName,
 	GetSocketErrorString = GetSocketErrorString,
+	GetExtensionFunction = GetExtensionFunction,
 }
 
 

@@ -58,63 +58,71 @@ local lshift = bit.lshift
 --
 -- Define the facility codes
 --
-FACILITY_XPS                     = 82
-FACILITY_WINRM                   = 51
-FACILITY_WINDOWSUPDATE           = 36
-FACILITY_WINDOWS_DEFENDER        = 80
-FACILITY_WINDOWS_CE              = 24
-FACILITY_WINDOWS                 = 8
-FACILITY_USERMODE_VOLMGR         = 56
-FACILITY_USERMODE_VIRTUALIZATION = 55
-FACILITY_USERMODE_VHD            = 58
-FACILITY_URT                     = 19
-FACILITY_UMI                     = 22
-FACILITY_UI                      = 42
-FACILITY_TPM_SOFTWARE            = 41
-FACILITY_TPM_SERVICES            = 40
-FACILITY_SXS                     = 23
-FACILITY_STORAGE                 = 3
-FACILITY_STATE_MANAGEMENT        = 34
-FACILITY_SSPI                    = 9
-FACILITY_SCARD                   = 16
-FACILITY_SHELL                   = 39
-FACILITY_SETUPAPI                = 15
-FACILITY_SECURITY                = 9
-FACILITY_SDIAG                   = 60
-FACILITY_RPC                     = 1
-FACILITY_RAS                     = 83
-FACILITY_PLA                     = 48
-FACILITY_OPC                     = 81
-FACILITY_WIN32                   = 7
-FACILITY_CONTROL                 = 10
-FACILITY_WEBSERVICES             = 61
-FACILITY_NULL                    = 0
-FACILITY_NDIS                    = 52
-FACILITY_METADIRECTORY           = 35
-FACILITY_MSMQ                    = 14
-FACILITY_MEDIASERVER             = 13
-FACILITY_MBN                     = 84
-FACILITY_INTERNET                = 12
-FACILITY_ITF                     = 4
-FACILITY_USERMODE_HYPERVISOR     = 53
-FACILITY_HTTP                    = 25
-FACILITY_GRAPHICS                = 38
-FACILITY_FWP                     = 50
-FACILITY_FVE                     = 49
-FACILITY_USERMODE_FILTER_MANAGER = 31
-FACILITY_DPLAY                   = 21
-FACILITY_DISPATCH                = 2
-FACILITY_DIRECTORYSERVICE        = 37
-FACILITY_CONFIGURATION           = 33
-FACILITY_COMPLUS                 = 17
-FACILITY_USERMODE_COMMONLOG      = 26
-FACILITY_CMI                     = 54
-FACILITY_CERT                    = 11
-FACILITY_BCD                     = 57
-FACILITY_BACKGROUNDCOPY          = 32
-FACILITY_ACS                     = 20
-FACILITY_AAF                     = 18
 
+FACILITY_NULL                    = 0
+FACILITY_RPC                     = 1
+FACILITY_DISPATCH                = 2
+FACILITY_STORAGE                 = 3
+FACILITY_ITF                     = 4
+FACILITY_WIN32                   = 7
+FACILITY_NTWIN32					= 7
+FACILITY_WINDOWS                 = 8
+FACILITY_SSPI                    = 9
+FACILITY_SECURITY                = 9
+
+FACILITY_CONTROL                 = 10
+FACILITY_CERT                    = 11
+FACILITY_INTERNET                = 12
+FACILITY_MEDIASERVER             = 13
+FACILITY_MSMQ                    = 14
+FACILITY_SETUPAPI                = 15
+FACILITY_SCARD                   = 16
+FACILITY_COMPLUS                 = 17
+FACILITY_AAF                     = 18
+FACILITY_URT                     = 19
+
+FACILITY_ACS                     = 20
+FACILITY_DPLAY                   = 21
+FACILITY_UMI                     = 22
+FACILITY_SXS                     = 23
+FACILITY_WINDOWS_CE              = 24
+FACILITY_HTTP                    = 25
+FACILITY_USERMODE_COMMONLOG      = 26
+
+FACILITY_USERMODE_FILTER_MANAGER = 31
+FACILITY_BACKGROUNDCOPY          = 32
+FACILITY_CONFIGURATION           = 33
+FACILITY_STATE_MANAGEMENT        = 34
+FACILITY_METADIRECTORY           = 35
+FACILITY_WINDOWSUPDATE           = 36
+FACILITY_DIRECTORYSERVICE        = 37
+FACILITY_GRAPHICS                = 38
+FACILITY_SHELL                   = 39
+
+FACILITY_TPM_SERVICES            = 40
+FACILITY_TPM_SOFTWARE            = 41
+FACILITY_UI                      = 42
+FACILITY_PLA                     = 48
+FACILITY_FVE                     = 49
+
+FACILITY_FWP                     = 50
+FACILITY_WINRM                   = 51
+FACILITY_NDIS                    = 52
+FACILITY_USERMODE_HYPERVISOR     = 53
+FACILITY_CMI                     = 54
+FACILITY_USERMODE_VIRTUALIZATION = 55
+FACILITY_USERMODE_VOLMGR         = 56
+FACILITY_BCD                     = 57
+FACILITY_USERMODE_VHD            = 58
+
+FACILITY_SDIAG                   = 60
+FACILITY_WEBSERVICES             = 61
+
+FACILITY_WINDOWS_DEFENDER        = 80
+FACILITY_OPC                     = 81
+FACILITY_XPS                     = 82
+FACILITY_RAS                     = 83
+FACILITY_MBN                     = 84
 
 --
 -- MessageId: ERROR_SUCCESS
@@ -232,6 +240,10 @@ E_POINTER							= (0x80004003)	-- Invalid pointer
 SEVERITY_SUCCESS    = 0
 SEVERITY_ERROR      = 1
 
+function NT_SUCCESS(status) 
+	return status >= 0
+end
+
 --
 -- Generic test for success on any status value (non-negative numbers
 -- indicate success).
@@ -299,7 +311,7 @@ end
 -- HRESULT_FROM_WIN32(x) used to be a macro, however we now run it as an inline function
 -- to prevent double evaluation of 'x'. If you still need the macro, you can use __HRESULT_FROM_WIN32(x)
 --
-function __HRESULT_FROM_WIN32(x)
+function HRESULT_FROM_WIN32(x)
 	if x <= 0 then
 		return x
 	end
@@ -307,3 +319,15 @@ function __HRESULT_FROM_WIN32(x)
 	return bor(band(x, 0x0000FFFF), lshift(FACILITY_WIN32, 16), 0x80000000)
 end
 
+
+-- This is not the NTSTATUS_FROM_WIN32 that the DDK provides, 
+-- because the DDK got it wrong!
+local ERROR_SEVERITY_WARNING = 0x80000000
+
+function NTSTATUS_FROM_WIN32(err) 
+	if err <= 0 then
+		return err
+	end
+	
+	return bor(band(err, 0x0000FFFF), lshift(FACILITY_NTWIN32, 16), ERROR_SEVERITY_WARNING);
+end

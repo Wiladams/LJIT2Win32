@@ -168,11 +168,11 @@ local NativeSocket_mt = {
 				return false, err
 			end
 			
-			if ret == 0 then
-				return false, "wouldblock"
+			if success > 0 then
+				return true;
 			end
 
-			return true
+			return false, "wouldblock";
 		end,
 		
 		CanWriteWithoutBlocking = function(self)

@@ -28,7 +28,7 @@ local bnot = bit.bnot
 local bswap = bit.bswap
 
 require "WinBase"
-
+require "kernel32_ffi"
 
 
 
@@ -51,7 +51,7 @@ typedef unsigned int GROUP;
 
 
 INVALID_SOCKET 			= ffi.new("SOCKET", -1)
-SOCKET_ERROR 			=  0xffffffff
+SOCKET_ERROR 			= -1	-- 0xffffffff
 
 
 INADDR_ANY             = 0x00000000
@@ -215,6 +215,36 @@ SIO_SET_MULTICAST_FILTER   = _IOW(string.byte't', 125, "uint32_t")
 SIO_GET_MULTICAST_FILTER   = _IOW(string.byte't', bor(124, IOC_IN), "uint32_t")
 SIOCSIPMSFILTER            = SIO_SET_MULTICAST_FILTER
 SIOCGIPMSFILTER            = SIO_GET_MULTICAST_FILTER
+
+
+-- Constants for WSAIoctl()
+IOC_UNIX                     = 0x00000000;
+IOC_WS2                      = 0x08000000;
+IOC_PROTOCOL                 = 0x10000000;
+IOC_VENDOR                   = 0x18000000;
+local _WSAIO = function (x,y) return bor(IOC_VOID,x,y) end
+local _WSAIOR = function(x,y) return bor(IOC_OUT,x,y) end
+local _WSAIOW = function(x,y) return bor(IOC_IN,x,y) end
+local _WSAIORW = function(x,y)return bor(IOC_INOUT,x,y) end
+
+SIO_ASSOCIATE_HANDLE          = _WSAIOW(IOC_WS2,1)
+SIO_ENABLE_CIRCULAR_QUEUEING  = _WSAIO(IOC_WS2,2)
+SIO_FIND_ROUTE                = _WSAIOR(IOC_WS2,3)
+SIO_FLUSH                     = _WSAIO(IOC_WS2,4)
+SIO_GET_BROADCAST_ADDRESS     = _WSAIOR(IOC_WS2,5)
+SIO_GET_EXTENSION_FUNCTION_POINTER  =_WSAIORW(IOC_WS2,6)
+SIO_GET_QOS                   = _WSAIORW(IOC_WS2,7)
+SIO_GET_GROUP_QOS             = _WSAIORW(IOC_WS2,8)
+SIO_MULTIPOINT_LOOPBACK       = _WSAIOW(IOC_WS2,9)
+SIO_MULTICAST_SCOPE           = _WSAIOW(IOC_WS2,10)
+SIO_SET_QOS                   = _WSAIOW(IOC_WS2,11)
+SIO_SET_GROUP_QOS             = _WSAIOW(IOC_WS2,12)
+SIO_TRANSLATE_HANDLE          = _WSAIORW(IOC_WS2,13)
+SIO_ROUTING_INTERFACE_QUERY   = _WSAIORW(IOC_WS2,20)
+SIO_ROUTING_INTERFACE_CHANGE  = _WSAIOW(IOC_WS2,21)
+SIO_ADDRESS_LIST_QUERY        = _WSAIOR(IOC_WS2,22)
+SIO_ADDRESS_LIST_CHANGE       = _WSAIO(IOC_WS2,23)
+--SIO_QUERY_TARGET_PNP_HANDLE   = _WSAIOR(IOC_W32,24)
 
 
 -- Possible flags for the  iiFlags - bitmask.
