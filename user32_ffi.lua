@@ -261,6 +261,51 @@ local user32_ffi = {
 
 }
 
+-- Input handling
+ffi.cdef[[
+typedef struct tagMOUSEINPUT {
+  LONG      dx;
+  LONG      dy;
+  DWORD     mouseData;
+  DWORD     dwFlags;
+  DWORD     time;
+  ULONG_PTR dwExtraInfo;
+} MOUSEINPUT, *PMOUSEINPUT;
+
+typedef struct tagKEYBDINPUT {
+  WORD      wVk;
+  WORD      wScan;
+  DWORD     dwFlags;
+  DWORD     time;
+  ULONG_PTR dwExtraInfo;
+} KEYBDINPUT, *PKEYBDINPUT;
+
+typedef struct tagHARDWAREINPUT {
+  DWORD uMsg;
+  WORD  wParamL;
+  WORD  wParamH;
+} HARDWAREINPUT, *PHARDWAREINPUT;
+
+
+static const int INPUT_MOUSE = 0;
+static const int INPUT_KEYBOARD = 1;
+static const int INPUT_HARDWARE = 2;
+
+typedef struct tagINPUT {
+  DWORD type;
+  union {
+    MOUSEINPUT    mi;
+    KEYBDINPUT    ki;
+    HARDWAREINPUT hi;
+  };
+} INPUT, *PINPUT;
+
+UINT SendInput(
+    UINT nInputs,
+    PINPUT pInputs,
+    int cbSize
+);
+]]
 
 
 -- WINDOW CONSTRUCTION
@@ -387,6 +432,8 @@ typedef struct _devicemode {
 
 
 ]]
+
+
 
 
 -- Windows functions
@@ -520,6 +567,59 @@ int MessageBoxA(HWND hWnd,
 		LPCTSTR lpCaption,
 		UINT uType
 	);
+]]
+
+-- Window Station
+ffi.cdef[[
+BOOL  CloseWindowStation(HWINSTA hWinSta);
+
+HWINSTA  CreateWindowStation(
+	LPCTSTR lpwinsta,
+	DWORD dwFlags,
+	ACCESS_MASK dwDesiredAccess,
+	LPSECURITY_ATTRIBUTES lpsa
+);
+
+
+// Callback function for EnumWindowStations
+typedef BOOL (__stdcall *WINSTAENUMPROC) (LPTSTR lpszWindowStation,LPARAM lParam);
+
+BOOL  EnumWindowStations(WINSTAENUMPROC lpEnumFunc, LPARAM lParam);
+
+HWINSTA  GetProcessWindowStation(void);
+
+HWINSTA  OpenWindowStationA(LPTSTR lpszWinSta, BOOL fInherit, ACCESS_MASK dwDesiredAccess);
+HWINSTA  OpenWindowStationW(LPTSTR lpszWinSta, BOOL fInherit, ACCESS_MASK dwDesiredAccess);
+
+BOOL  SetProcessWindowStation(HWINSTA hWinSta);
+
+BOOL  GetUserObjectInformation(HANDLE hObj,
+    int nIndex,
+	PVOID pvInfo,
+    DWORD nLength,
+	LPDWORD lpnLengthNeeded
+);
+
+/*
+BOOL  GetUserObjectSecurity(HANDLE hObj,
+	PSECURITY_INFORMATION pSIRequested,
+	PSECURITY_DESCRIPTOR pSD,
+	DWORD nLength,
+	LPDWORD lpnLengthNeeded
+);
+
+
+BOOL  SetUserObjectInformation(HANDLE hObj,
+  int nIndex,
+  PVOID pvInfo,
+  DWORD nLength
+);
+
+BOOL  SetUserObjectSecurity(HANDLE hObj,
+  PSECURITY_INFORMATION pSIRequested,
+  PSECURITY_DESCRIPTOR pSID
+);
+*/
 ]]
 
 

@@ -1,7 +1,8 @@
 
 local ffi = require "ffi"
 
-local user32_ffi = require "user32_ffi"
+local user32_ffi = require ("user32_ffi");
+
 local User32Lib = ffi.load("User32");
 
 --[=[
@@ -159,10 +160,55 @@ User32MSGHandler.CreateHandler = function(self, title, x, y, width, height, wind
 	return win
 end
 
+ffi.cdef[[
+typedef struct {
+	HWINSTA	Handle;
+} WindowStation;
+]]
+
+local WindowStation = ffi.typeof("WindowStation");
+local WindowStation_mt = {
+	__gc = function(self)
+	end,
+	
+	__new = function(ct, params)
+	end,
+	
+	__index = {
+		Close = function(self)
+			return (User32Lib.CloseWindowStation(self.Handle) ~= 0) or false, User32Lib.GetLastError();
+		end,
+		
+	},
+}
+ffi.metatype(WindowStation, WindowStation_mt);
+
+
+--[[
+	Some functions, reflecting what's in the ffi interface
+	
+	
+--]]
+
+local SendInput = function(nInputs, pInputs, cbSize)
+	local res = User32Lib.SendInput(nInputs,pInputs,cbSize);
+	
+	-- If the number of events inserted was zero,
+	-- then there was an error
+	if res == 0 then
+		return nil, User32Lib.GetLastError();
+	end
+	
+	-- return the number of events that were inserted
+	return res
+end
+
 return {
 	FFI = user32_ffi,
 	Lib = User32Lib,
 	
 	User32MSGHandler = User32MSGHandler,
 	NativeWindow = NativeWindow,
+	
+	SendInput = SendInput,
 }
