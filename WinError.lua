@@ -331,3 +331,11 @@ function NTSTATUS_FROM_WIN32(err)
 	
 	return bor(band(err, 0x0000FFFF), lshift(FACILITY_NTWIN32, 16), ERROR_SEVERITY_WARNING);
 end
+
+NTE_BAD_FLAGS                    = 0x80090009;
+NTE_INVALID_HANDLE               = 0x80090026;
+NTE_INVALID_PARAMETER            = 0x80090027;
+NTE_NO_MEMORY                    = 0x8009000E;
+
+NTE_NO_MORE_ITEMS                = 0x8009002A;
+NTE_SILENT_CONTEXT               = 0x80090022;

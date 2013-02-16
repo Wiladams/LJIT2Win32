@@ -39,7 +39,9 @@ typedef uint64_t		ULONGLONG;
 
 
 // Some pointer types
+typedef uint8_t	*		PBYTE;
 typedef unsigned char	*PUCHAR;
+typedef const unsigned char	*PCUCHAR;
 typedef unsigned int	*PUINT;
 typedef unsigned int	*PUINT32;
 typedef unsigned long	*PULONG;
@@ -62,6 +64,7 @@ typedef DWORD *			LPCOLORREF;
 typedef BOOL *			LPBOOL;
 typedef char *			LPSTR;
 typedef short *			LPWSTR;
+typedef short *			PWSTR;
 typedef const short *	LPCWSTR;
 typedef LPSTR			LPTSTR;
 

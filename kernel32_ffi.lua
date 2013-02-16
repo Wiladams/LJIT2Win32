@@ -232,6 +232,12 @@ DWORD SleepEx(DWORD dwMilliseconds, BOOL bAlertable);
 	Defined in Kernel32
 --]]
 
+CP_ACP 		= 0		-- default to ANSI code page
+CP_OEMCP		= 1		-- default to OEM code page
+CP_MACCP		= 2		-- default to MAC code page
+CP_THREAD_ACP	= 3		-- current thread's ANSI code page
+CP_SYMBOL		= 42	-- SYMBOL translations
+
 ffi.cdef[[
 int MultiByteToWideChar(UINT CodePage,
     DWORD    dwFlags,
