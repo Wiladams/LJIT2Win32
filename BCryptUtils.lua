@@ -1,20 +1,15 @@
 local ffi = require "ffi"
 
 local BCrypt = require "BCrypt"
+local stringutils = require("stringutils")
 
-local function bintohex(bytes, len)
-	local str = ffi.string(bytes, len)
 
-	return (str:gsub('(.)', function(c)
-		return string.format('%02x', string.byte(c))
-	end))
-end
 
 
 BCryptKey = ffi.typeof("BCryptKey");
 BCryptKey_mt = {
 	__gc = function(self)
-		status = BCrypt.Lib.BCryptDestroyKey(self.Handle)
+		local status = BCrypt.Lib.BCryptDestroyKey(self.Handle)
 	end,
 
 	__index  = {
@@ -169,7 +164,7 @@ BCryptHash_mt = {
 			self:HashMore(input);
 			self:Finish(outbuff, outlen);
 
-			local hex = bintohex(outbuff, outlen);
+			local hex = stringutils.bintohex(outbuff, outlen);
 
 			return hex
 		end,

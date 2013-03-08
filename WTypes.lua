@@ -397,13 +397,13 @@ typedef SCODE *PSCODE;
 
 
 typedef
-enum tagMEMCTX
-    {	MEMCTX_TASK	= 1,
+enum tagMEMCTX {	
+  MEMCTX_TASK	= 1,
 	MEMCTX_SHARED	= 2,
 	MEMCTX_MACSYSTEM	= 3,
 	MEMCTX_UNKNOWN	= -1,
 	MEMCTX_SAME	= -2
-    } 	MEMCTX;
+} MEMCTX;
 
 
 

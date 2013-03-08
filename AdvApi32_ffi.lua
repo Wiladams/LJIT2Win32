@@ -1,6 +1,7 @@
 
 local ffi = require ("ffi");
-require ("WTypes");
+
+require ("WinBase")
 
 ffi.cdef[[
 typedef struct _SID_IDENTIFIER_AUTHORITY {
@@ -29,6 +30,33 @@ BOOL  ConvertStringSidToSid(LPCTSTR StringSid, PSID *Sid);
 
 BOOL  CopySid(DWORD nDestinationSidLength, PSID pDestinationSid, PSID pSourceSid);
 
+BOOL CreateProcessAsUser(
+    HANDLE hToken,
+    LPCTSTR lpApplicationName,
+    LPTSTR lpCommandLine,
+    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    BOOL bInheritHandles,
+    DWORD dwCreationFlags,
+    LPVOID lpEnvironment,
+    LPCTSTR lpCurrentDirectory,
+    LPSTARTUPINFO lpStartupInfo,
+    LPPROCESS_INFORMATION lpProcessInformation
+);
+
+BOOL CreateProcessWithLogonW(
+    LPCWSTR lpUsername,
+    LPCWSTR lpDomain,
+    LPCWSTR lpPassword,
+    DWORD dwLogonFlags,
+    LPCWSTR lpApplicationName,
+    LPWSTR lpCommandLine,
+    DWORD dwCreationFlags,
+    LPVOID lpEnvironment,
+    LPCWSTR lpCurrentDirectory,
+    LPSTARTUPINFOW lpStartupInfo,
+    LPPROCESS_INFORMATION lpProcessInfo);
+
 BOOL  EqualSid(PSID pSid1, PSID pSid2);
 
 PVOID  FreeSid(PSID pSid);
@@ -46,6 +74,14 @@ PUCHAR  GetSidSubAuthorityCount(PSID pSid);
 BOOL  InitializeSid(PSID Sid, PSID_IDENTIFIER_AUTHORITY pIdentifierAuthority, BYTE nSubAuthorityCount);
 
 BOOL  IsValidSid(PSID pSid);
+
+BOOL LogonUser(
+    LPTSTR lpszUsername,
+    LPTSTR lpszDomain,
+    LPTSTR lpszPassword,
+    DWORD dwLogonType,
+    DWORD dwLogonProvider,
+    PHANDLE phToken);
 
 BOOL  LookupAccountName(LPCTSTR lpSystemName,
     LPCTSTR lpAccountName,
