@@ -7,6 +7,21 @@ local bor = bit.bor
 local lshift = bit.lshift
 local rshift = bit.rshift
 
+ffi.cdef[[
+typedef char *      PCHAR;
+
+typedef char *      PSTR;
+typedef const char *  PCSTR;
+typedef const short * PCWSTR;
+
+typedef uint32_t *  PDWORD;
+typedef long *    PLONG;
+typedef uint64_t  ULONGLONG;
+typedef uint64_t  ULONG64;
+typedef uint64_t *  PULONG64;
+typedef uint64_t    DWORD64;
+typedef uint64_t *  PDWORD64;
+]]
 
 ffi.cdef[[
 
@@ -19,12 +34,12 @@ typedef wchar_t			WCHAR;
 typedef uint16_t		WORD;
 typedef unsigned long	DWORD;
 typedef uint32_t		DWORD32;
-typedef int				INT;
+typedef int				  INT;
 typedef int32_t			INT32;
 typedef int64_t			INT64;
 typedef float 			FLOAT;
-typedef long			LONG;
-typedef signed int		LONG32;
+typedef long        LONG;
+typedef signed int	LONG32;
 typedef int64_t			LONGLONG;
 typedef size_t			SIZE_T;
 
@@ -40,6 +55,7 @@ typedef uint64_t		ULONGLONG;
 
 // Some pointer types
 typedef uint8_t	*		PBYTE;
+
 typedef unsigned char	*PUCHAR;
 typedef const unsigned char	*PCUCHAR;
 typedef unsigned int	*PUINT;

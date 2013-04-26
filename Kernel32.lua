@@ -36,7 +36,7 @@ function GetProcAddress(library, funcname)
 	if not library or not funcname then return nil end
 	
 	local lib = ffi.load(library)
-	local paddr = Lib.GetProcAddress(C.GetModuleHandleA(library), funcname)
+	local paddr = Lib.GetProcAddress(Lib.GetModuleHandleA(library), funcname)
 
 	if paddr ~= nil then
 		return paddr
