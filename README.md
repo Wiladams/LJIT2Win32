@@ -9,3 +9,6 @@ http://github.com/wiladams/TINN
 There are a lot more bindings, to a much broader set of Windows routines, and they're kept
 more up to date.
 
+Even more recent, and more faithful to Win32 API is lj2win32
+
+https://github.com/Wiladams/lj2win32
